@@ -1,47 +1,42 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const taskInput = document.getElementById("taskInput");
-    const taskDate = document.getElementById("taskDate");
+    const taskTitleInput = document.getElementById("taskTitleInput");
+    const taskDateInput = document.getElementById("taskDateInput");
     const addTaskBtn = document.getElementById("addTaskBtn");
     const taskList = document.getElementById("taskList");
     const taskDetailsModal = document.getElementById("taskDetailsModal");
-    const taskDescriptionInput = document.getElementById("taskDescription");
-    const taskDueDateInput = document.getElementById("taskDueDate");
+    const taskTitleModalInput = document.getElementById("taskTitleModalInput");
+    const taskDescriptionModalInput = document.getElementById("taskDescriptionModalInput");
+    const taskDateModalInput = document.getElementById("taskDateModalInput");
     const saveTaskDetailsBtn = document.getElementById("saveTaskDetailsBtn");
     const deleteTaskBtn = document.getElementById("deleteTaskBtn");
     let selectedTask = null;
 
     // Function to add a new task
-    function addTask(taskText, taskDueDate) {
+    function addTask(taskTitle, taskDescription, taskDate) {
+        // console.log("Adding task:", taskTitle, taskDescription, taskDate); // Debugging line
         const li = document.createElement("li");
-        li.innerHTML = `<span class="task-text">${taskText}</span>`;
-        if (taskDueDate) {
-            const dueDate = document.createElement("span");
-            dueDate.textContent = formatDate(taskDueDate);
-            li.appendChild(dueDate);
-        }
+        li.textContent = taskTitle;
+        li.dataset.description = taskDescription || "";
+        li.dataset.date = taskDate;
         taskList.appendChild(li);
-        taskInput.value = "";
-        taskDate.value = "";
-        saveTasksToCookies(); // Save tasks to cookies after adding a new task
-    }
-
-    // Function to format date as "YYYY-MM-DD"
-    function formatDate(date) {
-        const [year, month, day] = date.split("-");
-        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+        taskTitleInput.value = "";
+        taskDateInput.value = "";
+        saveTasksToCookies();
     }
 
     // Function to save tasks to cookies
     function saveTasksToCookies() {
         const tasks = [];
         taskList.querySelectorAll("li").forEach(function(task) {
-            const taskText = task.querySelector(".task-text").textContent;
-            const taskDueDate = task.querySelector("span:nth-child(2)") ? task.querySelector("span:nth-child(2)").textContent : null;
-            tasks.push({text: taskText, dueDate: taskDueDate});
+            tasks.push({
+                title: task.textContent,
+                description: task.dataset.description || "",
+                date: task.dataset.date
+            });
         });
         document.cookie = `tasks=${JSON.stringify(tasks)}`;
     }
-
+    
     // Function to load tasks from cookies
     function loadTasksFromCookies() {
         const cookies = document.cookie.split("; ");
@@ -50,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (name === "tasks") {
                 const tasks = JSON.parse(value);
                 tasks.forEach(function(task) {
-                    addTask(task.text, task.dueDate);
+                    addTask(task.title, task.description, task.date);
                 });
             }
         }
@@ -58,21 +53,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Event listener for the "Add Task" button
     addTaskBtn.addEventListener("click", function() {
-        const taskText = taskInput.value.trim();
-        const taskDueDate = taskDate.value.trim();
-        if (taskText !== "") {
-            addTask(taskText, taskDueDate);
-        }
-    });
-
-    // Event listener for pressing Enter in the input field
-    taskInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            const taskText = taskInput.value.trim();
-            const taskDueDate = taskDate.value.trim();
-            if (taskText !== "") {
-                addTask(taskText, taskDueDate);
-            }
+        const taskTitle = taskTitleInput.value.trim();
+        const taskDate = taskDateInput.value.trim();
+        const taskDescription = "";
+        if (taskTitle !== "") {
+            addTask(taskTitle, taskDescription, taskDate);
         }
     });
 
@@ -81,10 +66,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const clickedTask = event.target.closest("li");
         if (clickedTask) {
             selectedTask = clickedTask;
-            const taskText = selectedTask.querySelector(".task-text").textContent;
-            const taskDueDate = selectedTask.querySelector("span:nth-child(2)") ? selectedTask.querySelector("span:nth-child(2)").textContent : "";
-            taskDescriptionInput.value = taskText;
-            taskDueDateInput.value = taskDueDate;
+            taskTitleModalInput.value = selectedTask.textContent;
+            taskDescriptionModalInput.value = selectedTask.dataset.description;
+            taskDateModalInput.value = selectedTask.dataset.date;
             taskDetailsModal.style.display = "block";
         }
     });
@@ -96,25 +80,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Event listener for saving task details
     saveTaskDetailsBtn.addEventListener("click", function() {
-        const taskText = taskDescriptionInput.value.trim();
-        const taskDueDate = taskDueDateInput.value.trim();
-        if (taskText !== "") {
-            selectedTask.querySelector(".task-text").textContent = taskText;
-            if (taskDueDate !== "") {
-                const dueDateSpan = selectedTask.querySelector("span:nth-child(2)");
-                if (dueDateSpan) {
-                    dueDateSpan.textContent = formatDate(taskDueDate);
-                } else {
-                    const newDueDate = document.createElement("span");
-                    newDueDate.textContent = formatDate(taskDueDate);
-                    selectedTask.appendChild(newDueDate);
-                }
-            } else {
-                const dueDateSpan = selectedTask.querySelector("span:nth-child(2)");
-                if (dueDateSpan) {
-                    selectedTask.removeChild(dueDateSpan);
-                }
-            }
+        const newTaskTitle = taskTitleModalInput.value.trim();
+        const newTaskDescription = taskDescriptionModalInput.value.trim();
+        const newTaskDate = taskDateModalInput.value.trim();
+        if (newTaskTitle !== "") {
+            selectedTask.textContent = newTaskTitle;
+            selectedTask.dataset.description = newTaskDescription;
+            selectedTask.dataset.date = newTaskDate;
             saveTasksToCookies();
             taskDetailsModal.style.display = "none";
         }
