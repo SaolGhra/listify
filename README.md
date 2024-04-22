@@ -33,3 +33,7 @@ For any inquiries or questions, please contact the project maintainer at [contac
 ## Live Demo
 
 For a live demo or just general use of this product please go to [https://www.saolghra.co.uk/listify](https://www.saolghra.co.uk/listify)
+
+## Future Plans
+
+In the future, I plan to expand the functionality of Listify by porting it to mobile platforms and implementing local storage for data persistence. This will allow users to access their tasks and manage their todo lists on the go, without the need for an internet connection. By utilizing local storage, the app will be able to store task data directly on the user's device, providing a seamless and efficient user experience. Stay tuned for updates on these exciting developments!
