@@ -11,11 +11,23 @@
         <h1>To-Do List</h1>
         <div class="add-task">
             <input type="text" id="taskInput" placeholder="Enter task">
+            <input type="date" id="taskDate">
             <button id="addTaskBtn">Add Task</button>
         </div>
         <ul id="taskList">
             <!-- Tasks will be dynamically added here -->
         </ul>
+    </div>
+
+    <div id="taskDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Task Details</h2>
+            <input type="text" id="taskDescription" placeholder="Task description">
+            <input type="date" id="taskDueDate">
+            <button id="saveTaskDetailsBtn">Save Details</button>
+            <button id="deleteTaskBtn">Delete Task</button>
+        </div>
     </div>
 
     <script src="scripts/script.js"></script>
